@@ -1,24 +1,7 @@
 /**
+ * @description
  * The game Connect 4, playable in a browser.
  * Done to practice Typescript.
- * 
- * [Game breakdown]:
- * 1. Player clicks on column
- * 2. Column fires event indicating which column was clicked
- * 3. Game receives event
- * 4. Game inserts current player's circle
- * 5. Game checks for victory (skip to [end state] upon win)
- * 6. If column is full, remove clickability
- * 7. Change current player
- * 8. Go back to step 1
- * 
- * [End state]
- * 1. Game displays winner
- * 2. Game removes all clickability
- * 3. Game displays buttons to replay
- * 4. On button click:
- * 4a. Reset grid and variables
- * 4b. Go back to step 1 of [Game breakdown]
  *  
  * @author nstryder
  * @version 0.1
@@ -29,7 +12,7 @@
 // IMPORTS
 // =============================================================================
 import Column from "./classes/column.js";
-import Slot from "./classes/slot.js";
+import {Slot, FilledBy} from "./classes/slot.js";
 import * as helper from "./helper.js";
 
 // =============================================================================
@@ -50,44 +33,115 @@ const DOM =
 };
 
 /** Holds various game variables */
-const Game =
+interface IGame
 {
-    player : 1,
-    gameIsWon : false
-};
+    player? : FilledBy,
+    gameIsWon? : boolean,
+    grid?: Slot[][]
+}
+const Game: IGame = {};
+
 
 // =============================================================================
 // VARS
 // =============================================================================
 
 /** Represents game grid in code. */
-const grid: Slot[][] = helper.createArray2D(ROWS);
+Game.grid = helper.createArray2D(ROWS);
 
 /** Clickable columns allowing player to drop a circle into the grid. */
 const columns = [];
 
 // =============================================================================
-// BEGIN
+// METHODS
 // =============================================================================
 
-/* Create DOM grid for both the code and the UI (7 x 6) */
-// Create DOM columns (7 columns)
-for (let col = 0; col < COLS; ++col)
+// -----------------------------------------------------------------------------
+// GAME PREPARATION
+// -----------------------------------------------------------------------------
+
+/**
+ * Creates DOM grid for both the code and the UI (Default: 6 rows x 7 cols) 
+ * 
+ * @param gridRows Number of rows in the grid
+ * @param gridCols Number of columns in the grid
+ */
+function createGrid(gridRows: number, gridCols: number)
 {
-    columns[col] = new Column();
-    // Create DOM rows (6 rows)
-    for (let row = 0; row < ROWS; ++row)
+    // Create DOM columns (7 columns)
+    for (let col = 0; col < gridCols; ++col)
     {
-        grid[row][col] = new Slot();
+        columns[col] = new Column(col);
+        // Create DOM rows/Slots (6 rows)
+        for (let row = 0; row < gridRows; ++row)
+        {
+            Game.grid[row][col] = new Slot();
 
-        // Add a bunch of Slots to each column
-        columns[col].element.appendChild(grid[row][col].element);
+            // Add a bunch of Slots to each column
+            columns[col].element.appendChild(Game.grid[row][col].element);
+        }
 
-        
+        // Add each column to the DOM Grid.
+        DOM.grid.appendChild(columns[col].element);
     }
-
-    // Add each column to the Grid.
-    DOM.grid.appendChild(columns[col].element);
 }
 
-function dropCircle()
+function allowClickOnAllColumns(columns: Column[])
+{
+    columns.forEach(col => {
+        col.addListen();
+    });
+}
+
+function gameInit()
+{
+    createGrid(ROWS, COLS);
+    allowClickOnAllColumns(columns);
+    
+    // Listen for column index info
+    window.addEventListener('columnClick', handleColumnClick);
+
+}
+
+gameInit();
+
+// -----------------------------------------------------------------------------
+// GAME CYCLE
+// -----------------------------------------------------------------------------
+
+function handleColumnClick(e: CustomEvent)
+{
+    let colIndex = e.detail.index;
+
+    insertCircle(Game, colIndex, ROWS);
+
+    // Check if top Slot is filled
+    if (Game.grid[0][colIndex].state != FilledBy.none)
+    {
+        console.log(`column ${colIndex} has been filled`);
+        // Remove clickability of this column
+        columns[colIndex].removeListen();
+    }
+}
+
+function insertCircle(Game: IGame, colIndex: number, rows: number)
+{
+    // Check for an open slot at this column
+    for (let row = rows - 1; row >= 0; --row)
+    {
+        // If open, fill it and switch players
+        if (Game.grid[row][colIndex].state === FilledBy.none)
+        {
+            Game.grid[row][colIndex].changeState(Game.player);
+            switchPlayers(Game);
+            return;
+        }
+    }
+}
+
+function switchPlayers(Game: IGame)
+{
+    (Game.player === FilledBy.player1) 
+    ? Game.player = FilledBy.player2
+    : Game.player = FilledBy.player1
+}
