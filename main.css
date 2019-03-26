@@ -88,8 +88,8 @@ FOR USE BY GAME LOGIC
 @keyframes slideDown {
     from 
     { 
-        top: -5em; 
-        border-color: black;
+        top: -75%; 
+        border-color: grey;
     }
     to   
     { 
@@ -101,11 +101,11 @@ FOR USE BY GAME LOGIC
 .filledByPlayer1 {
     position: relative;
     background-color: var(--p1Color);
-    animation: slideDown 0.15s forwards;
+    animation: slideDown 0.15s forwards ease-in;
 }
 
 .filledByPlayer2 {
     position: relative;
     background-color: var(--p2Color);
-    animation: slideDown 0.15s forwards;
+    animation: slideDown 0.15s forwards ease-in;
 }
