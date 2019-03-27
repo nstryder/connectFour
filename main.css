@@ -46,6 +46,17 @@ v-box, .vbox {
     flex-direction: column;
 }
 
+player-box {
+    display: flex;
+    flex-direction: column;
+    border: 0.1em solid rgb(55,55,55);
+    border-radius: 15px;
+    background-color: rgb(70,70,70);
+    margin: 0.5em;
+    padding: 0.5em;
+    transition: all 0.15s;
+}
+
 
 /* =============================================================================
 INPUT BOXES
@@ -108,4 +119,9 @@ FOR USE BY GAME LOGIC
     position: relative;
     background-color: var(--p2Color);
     animation: slideDown 0.15s forwards ease-in;
+}
+
+.currentPlayer {
+    border-color: yellow;
+    border-width: 0.2em;
 }

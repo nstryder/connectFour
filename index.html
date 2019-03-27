@@ -11,10 +11,25 @@
 <body>
     <h-box>
     <container->
-    <h-box id="grid">
-    </h-box>
+    <h-box id="grid"></h-box>
     </container->
     </h-box>
+    <h-box>
+        <player-box id="boxP1">
+            <div>Player 1</div>
+            <h-box>
+                <slot- class="filledByPlayer1"></slot->
+            </h-box>
+        </player-box>
+        <player-box id="boxP2">
+            <div>Player 2</div>
+            <h-box>
+                <slot- class="filledByPlayer2"></slot->
+            </h-box>
+        </player-box>
+    </h-box>
+
+
     <script src="main.js" type="module"></script>
 </body>
 </html>

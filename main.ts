@@ -17,7 +17,7 @@
 // =============================================================================
 import Column from "./classes/column.js";
 import {Slot, FilledBy} from "./classes/slot.js";
-import * as helper from "./helper.js";
+import * as helper from "./classes/helper.js";
 
 // =============================================================================
 // CONSTANTS
@@ -34,7 +34,9 @@ import * as helper from "./helper.js";
 /** Holds all HTML DOM elements. */
 const DOM = 
 {
-    grid: document.getElementById("grid")
+    grid: document.getElementById("grid"),
+    boxP1: document.getElementById("boxP1"),
+    boxP2: document.getElementById("boxP2")
 };
 
 /** Holds various game variables */
@@ -102,6 +104,7 @@ function allowClickOnAllColumns()
 
 function gameInit()
 {
+    // Init game parameters
     Game.player = FilledBy.player1;
     Game.gameIsWon = false;
     createGrid();
@@ -110,6 +113,9 @@ function gameInit()
     // Listen for column index info
     window.addEventListener('columnClick', handleColumnClick);
 
+    // Update DOM
+    DOM.boxP1.classList.add("currentPlayer");
+    DOM.boxP2.classList.remove("currentPlayer");
 }
 
 gameInit();
@@ -157,6 +163,9 @@ function switchPlayers()
     (Game.player === FilledBy.player1) 
     ? Game.player = FilledBy.player2
     : Game.player = FilledBy.player1
+
+    DOM.boxP1.classList.toggle("currentPlayer");
+    DOM.boxP2.classList.toggle("currentPlayer");
 }
 
 function checkVictory()
@@ -169,6 +178,10 @@ function checkVictory()
     winner = checkDiags();
     if (winner) { console.log("WINNER!: " + winner); return;} 
 }
+
+// -----------------------------------------------------------------------------
+// WIN CHECK METHODS
+// -----------------------------------------------------------------------------
 
 function checkRows(): FilledBy
 {
@@ -290,7 +303,6 @@ function scanDiagSW(y: number, x: number): boolean
     let winFlag = true;
     for (let count = 0; count < TO_WIN - 1; ++count)
     {
-        console.log(`before: ${winFlag} | coords: ${y+count},${x-count} | orig: ${Game.grid[y + count][x - count].state} next: ${Game.grid[y + count + 1][x - count - 1].state}`);
         winFlag = winFlag &&
             (Game.grid[y + count][x - count].state === 
             Game.grid[y + count + 1][x - count - 1].state)
