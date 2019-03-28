@@ -9,26 +9,63 @@
 </head>
 
 <body>
-    <h-box>
-    <container->
-    <h-box id="grid"></h-box>
-    </container->
-    </h-box>
-    <h-box>
-        <player-box id="boxP1">
-            <div>Player 1</div>
-            <h-box>
-                <slot- class="filledByPlayer1"></slot->
-            </h-box>
-        </player-box>
-        <player-box id="boxP2">
-            <div>Player 2</div>
-            <h-box>
-                <slot- class="filledByPlayer2"></slot->
-            </h-box>
-        </player-box>
-    </h-box>
+    <!-- Start menu -->
+    <v-box id="menu">
+        <panel->
+            <h1>Connect ∞</h1>
+            <h4>The classic vertical friendship killing game!</h4>
+            <content-box>
+                <h-box>
+                    <label>suhh</label> <input type="text" />
+                </h-box>
+                <button id="btStart">
+                    Start
+                </button>
+            </content-box>
+            <h6>
+                By nstryder |
+                <a href="https://github.com/nstryder/connectFour">
+                    Source code
+                </a>
+            </h6>
+        </panel->
+    </v-box>
+        
+    <!-- Connect 4 stuff -->
+    <v-box id="game" class="hidden">
+        <!-- Grid display -->
+        <h-box>
+            <container->
+                <h-box id="grid"></h-box>
+            </container->
+        </h-box>
 
+        <!-- Player display -->
+        <h-box>
+            <player-box id="boxP1">
+                <div>Player 1</div>
+                <h-box>
+                    <slot- class="filledByPlayer1"></slot->
+                </h-box>
+                <p id="winnerTextP1" class="hidden">WINNER!</p>
+            </player-box>
+
+            <player-box id="boxP2">
+                <div>Player 2</div>
+                <h-box>
+                    <slot- class="filledByPlayer2"></slot->
+                </h-box>
+                <p id="winnerTextP2" class="hidden">WINNER!</p>
+            </player-box>
+        </h-box>
+
+        <!-- Reset button -->
+        <panel- id="endMenu" class="hidden">
+            <button id="btReturn">Return to menu</button>
+            <button id="btRestart">Restart</button>
+        </panel->
+    </v-box>
+        
 
     <script src="main.js" type="module"></script>
 </body>

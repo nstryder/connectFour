@@ -31,7 +31,6 @@ export default class Column {
     /** Removes clickability of column for when it gets filled */
     removeListen() {
         this.element.onclick = null;
-        this.element.disabled = true;
         this.element.classList.remove("canBeClicked");
     }
 }

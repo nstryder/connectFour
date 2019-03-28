@@ -4,6 +4,8 @@ CSS VARIABLES
 :root {
     --p1Color: red;
     --p2Color: blue;
+    --headColor: rgb(57, 161, 57);
+    --contentFillColor: rgb(100, 100, 100);
 }
 
 /* =============================================================================
@@ -21,6 +23,20 @@ body {
     font-size: 1.1em;
 }
 
+h1, h4, h6 {
+    margin: 0.3em;
+    padding: 0.1em;
+}
+
+h4 {
+    margin: 1em;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+}
+
+a {
+    color:rgb(116, 240, 111);
+}
+
 /* =============================================================================
 CONTAINERS
 ============================================================================= */
@@ -32,22 +48,26 @@ container- {
     padding: 0.3em;
 }
 
-h-box, v-box, .vbox {
+h-box, v-box, .vbox, player-box, panel-, content-box {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+content-box {
+    background-color: var(--contentFillColor);
+    width: 100%;
 }
 
 h-box {
     flex-direction: row;
 }
 
-v-box, .vbox {
+v-box, .vbox, content-box {
     flex-direction: column;
 }
 
-player-box {
-    display: flex;
+player-box, panel- {
     flex-direction: column;
     border: 0.1em solid rgb(55,55,55);
     border-radius: 15px;
@@ -56,6 +76,25 @@ player-box {
     padding: 0.5em;
     transition: all 0.15s;
 }
+
+panel- {
+    padding: 0;
+}
+
+panel- button {
+    background-color: var(--headColor);
+    margin: 1em;
+    padding: 0.5em;
+    box-shadow: 0 0.2em 0.0em rgba(0, 0, 0, 0.5);
+    transition: background-color 0.15s
+}
+panel- button:hover {
+    background-color: rgb(89, 187, 60);
+}
+panel- button:active {
+    background-color: rgb(125, 207, 58);
+}
+
 
 
 /* =============================================================================
@@ -96,9 +135,18 @@ slot- {
 FOR USE BY GAME LOGIC
 ============================================================================= */
 
+.hidden {
+    display: none;
+}
+
+#game, #menu, #endMenu {
+    animation: slideDown 0.15s forwards ease-in;
+    animation: fadeIn 0.15s forwards ease-in;
+}
+
 @keyframes slideDown {
     from 
-    { 
+    {
         top: -75%; 
         border-color: grey;
     }
@@ -107,6 +155,11 @@ FOR USE BY GAME LOGIC
         top: 0; 
         border-color: white;
     }
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to   {opacity: 1;}
 }
 
 .filledByPlayer1 {

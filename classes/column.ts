@@ -49,7 +49,6 @@ export default class Column
     removeListen()
     {
         this.element.onclick = null;
-        this.element.disabled = true;
         this.element.classList.remove("canBeClicked");
     }
 }

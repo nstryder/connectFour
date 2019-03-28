@@ -4,12 +4,16 @@
  * Done to practice Typescript.
  *  
  * @author nstryder
- * @version 0.1
+ * @version 1.0
  * 
  */
 
  /**
-  * TODO: Start on menus and  polish victory
+  * TODO: Document the shit out of this!
+  * TODO: Add parameter customizer at start menu
+  *         >Include ability to change color of players
+  * TODO: Add winning line highlight
+  * TODO?: Add music
   */
 
 // =============================================================================
@@ -18,26 +22,24 @@
 import Column from "./classes/column.js";
 import {Slot, FilledBy} from "./classes/slot.js";
 import * as helper from "./classes/helper.js";
+import DOM from "./classes/dom.js";
+import StartMenu from "./classes/startMenu.js";
+import EndMenu from "./classes/endMenu.js";
+
+StartMenu.activate();
+EndMenu.activate();
 
 // =============================================================================
 // CONSTANTS
 // =============================================================================
 
-/** Number of rows in the game grid. */     const ROWS = 6; 
-/** Number of columns in the game grid. */  const COLS = 7;
-/** Number of circles to connect for win */ const TO_WIN = 4;        
+/** Number of rows in the game grid. */     var ROWS = 6; 
+/** Number of columns in the game grid. */  var COLS = 7;
+/** Number of circles to connect for win */ var TO_WIN = 4;     
 
 // =============================================================================
-// OBJECTS
+// INTERFACES
 // =============================================================================
-
-/** Holds all HTML DOM elements. */
-const DOM = 
-{
-    grid: document.getElementById("grid"),
-    boxP1: document.getElementById("boxP1"),
-    boxP2: document.getElementById("boxP2")
-};
 
 /** Holds various game variables */
 interface IGame
@@ -52,7 +54,6 @@ interface IGame
     grid?: Slot[][]
 }
 const Game: IGame = {};
-
 
 // =============================================================================
 // VARS
@@ -77,6 +78,9 @@ const columns = [];
  */
 function createGrid()
 {
+    // Refresh DOM Grid
+    DOM.grid.innerHTML = "";
+
     // Create DOM columns (7 columns)
     for (let col = 0; col < COLS; ++col)
     {
@@ -100,9 +104,21 @@ function allowClickOnAllColumns()
     columns.forEach(col => {
         col.addListen();
     });
+    window.addEventListener('columnClick', handleColumnClick);
 }
 
-function gameInit()
+function removeClickOnAllColumns()
+{
+    columns.forEach(col => {
+        col.removeListen();
+    });
+    window.removeEventListener('columnClick', handleColumnClick);
+}
+
+/**
+ * Initializes a round of the game.
+ */
+export function gameInit()
 {
     // Init game parameters
     Game.player = FilledBy.player1;
@@ -110,15 +126,16 @@ function gameInit()
     createGrid();
     allowClickOnAllColumns();
     
-    // Listen for column index info
-    window.addEventListener('columnClick', handleColumnClick);
+    // Hide winners from previous rounds
+    EndMenu.hide();
+    DOM.winnerTextP1.classList.add("hidden");
+    DOM.winnerTextP2.classList.add("hidden");
 
-    // Update DOM
+    // Show P1 as the active player
     DOM.boxP1.classList.add("currentPlayer");
     DOM.boxP2.classList.remove("currentPlayer");
-}
 
-gameInit();
+}
 
 // -----------------------------------------------------------------------------
 // GAME CYCLE
@@ -126,19 +143,16 @@ gameInit();
 
 function handleColumnClick(e: CustomEvent)
 {
-    console.log("== DROP BEGIN ==")
     let colIndex: number = e.detail.index;
 
     insertCircle(colIndex);
-
-    checkVictory();
-
+    let winner = checkVictory();
+    if (winner) { endGame(winner); return; }
     switchPlayers();
 
     // Check if top Slot is filled
     if (Game.grid[0][colIndex].state != FilledBy.none)
     {
-        console.log(`column ${colIndex} has been filled`);
         // Remove clickability of this column
         columns[colIndex].removeListen();
     }
@@ -162,21 +176,39 @@ function switchPlayers()
 {
     (Game.player === FilledBy.player1) 
     ? Game.player = FilledBy.player2
-    : Game.player = FilledBy.player1
+    : Game.player = FilledBy.player1;
 
-    DOM.boxP1.classList.toggle("currentPlayer");
-    DOM.boxP2.classList.toggle("currentPlayer");
+    [DOM.boxP1, DOM.boxP2].forEach(playerBox =>
+    {
+        playerBox.classList.toggle("currentPlayer");
+    });
 }
 
-function checkVictory()
+function checkVictory(): FilledBy
 {
     let winner: FilledBy;
-    winner = checkRows();
-    if (winner) { console.log("WINNER!: " + winner); return;} 
-    winner = checkCols();
-    if (winner) { console.log("WINNER!: " + winner); return;} 
-    winner = checkDiags();
-    if (winner) { console.log("WINNER!: " + winner); return;} 
+    let checkFuncs = [checkRows, checkCols, checkDiags];
+    for (let check of checkFuncs)
+    {
+        winner = check();
+        if (winner) return winner;
+    }
+
+    return FilledBy.none;
+}
+
+function endGame(winner: FilledBy)
+{
+    // Remove all event listeners
+    removeClickOnAllColumns();
+
+    // Show victor in UI
+    (winner === FilledBy.player1) 
+    ? DOM.winnerTextP1.classList.toggle("hidden")
+    : DOM.winnerTextP2.classList.toggle("hidden");
+
+    // Show end menu
+    EndMenu.show();
 }
 
 // -----------------------------------------------------------------------------
@@ -194,14 +226,14 @@ function checkRows(): FilledBy
         {
             // Guard statement
             if (Game.grid[y][x].state === FilledBy.none) continue;
-            if (scanRow(y, x)) return Game.grid[y][x].state;
+            if (rowHasLine(y, x)) return Game.grid[y][x].state;
         } // End of col iteration
     } // End of row iteration
     return FilledBy.none; /* Reached if no matches found */
 }
 
 /** Checks for consecutively placed circles */
-function scanRow(y: number, x: number): boolean
+function rowHasLine(y: number, x: number): boolean
 {
     /** Determines if circles are consecutive by comparing pairs each step */
     let winFlag = true;
@@ -226,14 +258,14 @@ function checkCols(): FilledBy
         {
             // Guard statement
             if (Game.grid[y][x].state === FilledBy.none) continue;
-            if (scanCol(y, x)) return Game.grid[y][x].state;
+            if (colHasLine(y, x)) return Game.grid[y][x].state;
         } // End of col iteration
     } // End of row iteration
     return FilledBy.none; /* Reached if no matches found */
 }
 
 /** Checks for consecutively placed circles */
-function scanCol(y: number, x: number): boolean
+function colHasLine(y: number, x: number): boolean
 {
     /** Determines if circles are consecutive by comparing pairs each step */
     let winFlag = true;
@@ -260,7 +292,7 @@ function checkDiags(): FilledBy
         {
             // Guard statement
             if (Game.grid[y][x].state === FilledBy.none) continue;
-            if (scanDiagSE(y, x)) return Game.grid[y][x].state;
+            if (diagHasLineSE(y, x)) return Game.grid[y][x].state;
         } // End of col iteration
     } // End of row iteration
 
@@ -274,7 +306,7 @@ function checkDiags(): FilledBy
         {
             // Guard statement
             if (Game.grid[y][x].state === FilledBy.none) continue;
-            if (scanDiagSW(y, x)) return Game.grid[y][x].state;
+            if (diagHasLineSW(y, x)) return Game.grid[y][x].state;
         } // End of col iteration
     } // End of row iteration
 
@@ -282,7 +314,7 @@ function checkDiags(): FilledBy
 }
 
 /** Checks for consecutively placed circles */
-function scanDiagSE(y: number, x: number): boolean
+function diagHasLineSE(y: number, x: number): boolean
 {
     /** Determines if circles are consecutive by comparing pairs each step */
     let winFlag = true;
@@ -297,7 +329,7 @@ function scanDiagSE(y: number, x: number): boolean
     return winFlag;
 }
 
-function scanDiagSW(y: number, x: number): boolean
+function diagHasLineSW(y: number, x: number): boolean
 {
     /** Determines if circles are consecutive by comparing pairs each step */
     let winFlag = true;
