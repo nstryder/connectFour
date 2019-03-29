@@ -54,10 +54,12 @@ const StartMenu =
      */
     validate(rows, cols, connects): boolean
     {
-        if (/*(isNaN(rows))
+        if ((isNaN(rows))
         ||  (isNaN(cols))
         ||  (isNaN(connects))
-        ||*/(connects > rows)
+        ||  (rows < 1)
+        ||  (cols < 1)
+        ||  (connects > rows)
         &&  (connects > cols))
         {
             return false;

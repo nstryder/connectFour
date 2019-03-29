@@ -17,20 +17,24 @@
             <content-box>
                 <h5>Custom options:</h5>
                 <form>
-                    <label>Rows <span>(Default: 6)</span></label> 
+                    <label>Rows (Default: 6)
+                        <h6>(Must be at least 1)</h6>
+                    </label> 
                     <input id="tfRows" type="number" value="6" min="1" 
-                    onKeyDown="return false" required/>
+                     required/>
 
-                    <label>Columns (Default: 7)</label> 
+                    <label>Columns (Default: 7)
+                        <h6>(Must be at least 1)</h6>
+                    </label> 
                     <input id="tfCols" type="number" value="7" min="1" 
-                    onKeyDown="return false" required/>
+                     required/>
                     
                     <label>
                         How many to connect (Default: 4)
-                        <h6>(Must be less than rows and columns)</h6>
+                        <h6>(Must be less than or match rows and columns)</h6>
                     </label>
                     <input id="tfConnect" type="number" value="4" min="1" 
-                    onKeyDown="return false" required/>
+                     required/>
 
                     <label>Player 1 Color</label> 
                     <input id="tfColor1" type="color" value="#da6732" required/>   

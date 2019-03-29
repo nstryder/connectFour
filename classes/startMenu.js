@@ -41,11 +41,13 @@ const StartMenu = {
      * Grabs user-input from the form and checks for validity.
      */
     validate(rows, cols, connects) {
-        if ( /*(isNaN(rows))
-        ||  (isNaN(cols))
-        ||  (isNaN(connects))
-        ||*/(connects > rows)
-            && (connects > cols)) {
+        if ((isNaN(rows))
+            || (isNaN(cols))
+            || (isNaN(connects))
+            || (rows < 1)
+            || (cols < 1)
+            || (connects > rows)
+                && (connects > cols)) {
             return false;
         }
         else {
