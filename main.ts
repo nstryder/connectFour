@@ -9,11 +9,16 @@
  */
 
  /**
+  * TODO: TIE CONDITION (aka board is filled)
+  *     > Probbly just check all top rows
+  *     > Or do acculumator set to match rows x columns
   * TODO: Document the shit out of this!
   * TODO: Add parameter customizer at start menu
-  *         >Include ability to change color of players
+  *     > Include ability to change color of players
+  *     > OKay we're mostly good but fix the connects < col/rows condition
   * TODO: Add winning line highlight
   * TODO?: Add music
+  * TODO?: Refactor into #real OOP
   */
 
 // =============================================================================
@@ -30,12 +35,14 @@ StartMenu.activate();
 EndMenu.activate();
 
 // =============================================================================
-// CONSTANTS
+// VARIABLES
 // =============================================================================
 
 /** Number of rows in the game grid. */     var ROWS = 6; 
 /** Number of columns in the game grid. */  var COLS = 7;
-/** Number of circles to connect for win */ var TO_WIN = 4;     
+/** Number of circles to connect for win */ var TO_WIN = 4;   
+/** Clickable columns allowing player to drop a circle into the grid. */
+const columns = [];  
 
 // =============================================================================
 // INTERFACES
@@ -56,16 +63,6 @@ interface IGame
 const Game: IGame = {};
 
 // =============================================================================
-// VARS
-// =============================================================================
-
-/** Represents game grid in code. */
-Game.grid = helper.createArray2D(ROWS);
-
-/** Clickable columns allowing player to drop a circle into the grid. */
-const columns = [];
-
-// =============================================================================
 // METHODS
 // =============================================================================
 
@@ -81,6 +78,9 @@ function createGrid()
     // Refresh DOM Grid
     DOM.grid.innerHTML = "";
 
+    /** Respresents game board in code */
+    Game.grid = helper.createArray2D(ROWS);
+    
     // Create DOM columns (7 columns)
     for (let col = 0; col < COLS; ++col)
     {
@@ -99,6 +99,7 @@ function createGrid()
     }
 }
 
+/** Adds click event listeners to each board column. */
 function allowClickOnAllColumns()
 {
     columns.forEach(col => {
@@ -107,6 +108,7 @@ function allowClickOnAllColumns()
     window.addEventListener('columnClick', handleColumnClick);
 }
 
+/** Removes all click event listeners on the board. */
 function removeClickOnAllColumns()
 {
     columns.forEach(col => {
@@ -118,8 +120,13 @@ function removeClickOnAllColumns()
 /**
  * Initializes a round of the game.
  */
-export function gameInit()
+export function gameInit(rows = ROWS, cols = COLS, connects = TO_WIN)
 {
+    // Insert custom parameters
+    ROWS = rows;
+    COLS = cols;
+    TO_WIN = connects;
+
     // Init game parameters
     Game.player = FilledBy.player1;
     Game.gameIsWon = false;
@@ -141,6 +148,11 @@ export function gameInit()
 // GAME CYCLE
 // -----------------------------------------------------------------------------
 
+/**
+ * This is where the main game logic is handled.
+ * 
+ * @param e The custom event holding the column index clicked
+ */
 function handleColumnClick(e: CustomEvent)
 {
     let colIndex: number = e.detail.index;
@@ -158,6 +170,11 @@ function handleColumnClick(e: CustomEvent)
     }
 }
 
+/**
+ * Drops a circle into the game board. Called upon clicking a column.
+ * 
+ * @param colIndex Marks which column a circle will be dropped in
+ */
 function insertCircle(colIndex: number)
 {
     // Check for an open slot at this column
@@ -172,6 +189,10 @@ function insertCircle(colIndex: number)
     }
 }
 
+/**
+ * Switches between player 1 and player 2,
+ * updating it to show in the page as well.
+ */
 function switchPlayers()
 {
     (Game.player === FilledBy.player1) 
@@ -184,6 +205,9 @@ function switchPlayers()
     });
 }
 
+/**
+ * Scans the board for any connected lines in various directions.
+ */
 function checkVictory(): FilledBy
 {
     let winner: FilledBy;
@@ -197,6 +221,11 @@ function checkVictory(): FilledBy
     return FilledBy.none;
 }
 
+/**
+ * Handles post-win logic.
+ * 
+ * @param winner The player with the winning line
+ */
 function endGame(winner: FilledBy)
 {
     // Remove all event listeners
@@ -215,6 +244,9 @@ function endGame(winner: FilledBy)
 // WIN CHECK METHODS
 // -----------------------------------------------------------------------------
 
+/**
+ * Goes through each row and finds adjacent horizontal lines.
+ */
 function checkRows(): FilledBy
 {
     // Go down the rows
@@ -232,7 +264,7 @@ function checkRows(): FilledBy
     return FilledBy.none; /* Reached if no matches found */
 }
 
-/** Checks for consecutively placed circles */
+/** Checks for horizontal consecutively placed circles */
 function rowHasLine(y: number, x: number): boolean
 {
     /** Determines if circles are consecutive by comparing pairs each step */
@@ -247,6 +279,9 @@ function rowHasLine(y: number, x: number): boolean
     return winFlag;
 }
 
+/**
+ * Goes through each column and finds adjacent vertical lines.
+ */
 function checkCols(): FilledBy
 {
     // Go right for cols
@@ -264,7 +299,7 @@ function checkCols(): FilledBy
     return FilledBy.none; /* Reached if no matches found */
 }
 
-/** Checks for consecutively placed circles */
+/** Checks for vertical consecutively placed circles */
 function colHasLine(y: number, x: number): boolean
 {
     /** Determines if circles are consecutive by comparing pairs each step */
@@ -280,6 +315,13 @@ function colHasLine(y: number, x: number): boolean
     return winFlag;
 }
 
+/**
+ * Goes from Top-left to Bottom-right
+ * 
+ * and Top-right to Bottom-left
+ * 
+ * to check for any adjacent diagonal lines.
+ */
 function checkDiags(): FilledBy
 {
     /* Check Top Left to Bottom Right */
@@ -313,7 +355,7 @@ function checkDiags(): FilledBy
     return FilledBy.none; /* Reached if no matches found */
 }
 
-/** Checks for consecutively placed circles */
+/** Checks for consecutively placed circles from top-left to bottom-right.*/
 function diagHasLineSE(y: number, x: number): boolean
 {
     /** Determines if circles are consecutive by comparing pairs each step */
@@ -329,6 +371,7 @@ function diagHasLineSE(y: number, x: number): boolean
     return winFlag;
 }
 
+/** Checks for consecutively placed circles from top-right to bottom-left. */
 function diagHasLineSW(y: number, x: number): boolean
 {
     /** Determines if circles are consecutive by comparing pairs each step */

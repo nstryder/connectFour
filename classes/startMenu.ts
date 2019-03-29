@@ -1,6 +1,15 @@
 import DOM from "./dom.js";
 import {gameInit} from "../main.js";
 
+const MenuDOM = 
+{
+    rows: document.getElementById("tfRows") as HTMLInputElement,
+    cols: document.getElementById("tfCols") as HTMLInputElement ,
+    connects: document.getElementById("tfConnect") as HTMLInputElement,
+    color1: document.getElementById("tfColor1") as HTMLInputElement,
+    color2: document.getElementById("tfColor2") as HTMLInputElement
+};
+
 /**
  * The Start menu backend code which hides the menu and launches the game
  */
@@ -11,15 +20,56 @@ const StartMenu =
      */
     activate() 
     {
-        DOM.btStart.onclick = () => 
+        DOM.btStart.onclick = () =>
         {
-            DOM.game.classList.remove("hidden");
-            DOM.menu.classList.add("hidden"); 
-            gameInit();
+            let rows = parseInt(MenuDOM.rows.value);
+            let cols = parseInt(MenuDOM.cols.value);
+            let connects = parseInt(MenuDOM.connects.value);
+
+            if(StartMenu.validate(rows, cols, connects))
+            {
+                console.log("yay");
+                StartMenu.start(rows, cols, connects);
+            }
         };
     },
 
+    /**
+     * Transitions from start menu to game and starts it 
+     */
+    start(rows, cols, connects)
+    {
+        DOM.game.classList.remove("hidden");
+        DOM.menu.classList.add("hidden"); 
+        gameInit(rows, cols, connects);
+    },
+
+    /**
+     * Grabs user-input from the form and checks for validity.
+     */
+    validate(rows, cols, connects): boolean
+    {
+        console.log(isNaN(rows))
+        console.log(isNaN(cols))
+        console.log(isNaN(connects))
+        console.log(connects > rows);
+        console.log(connects > cols);
+
+        if ((isNaN(rows))
+        ||  (isNaN(cols))
+        ||  (isNaN(connects))
+        ||  (connects > rows)
+        ||  (connects > cols))
+        {
+            return false;
+        }
+        else {return true};
+    },
+
+    /** Shows the start menu. */
     show() { DOM.menu.classList.remove("hidden"); },
+
+    /** Hides the start menu. */
     hide() { DOM.menu.classList.add("hidden"); }
 };
 export default StartMenu;

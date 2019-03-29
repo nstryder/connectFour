@@ -36,7 +36,6 @@ const Game = {};
 // VARS
 // =============================================================================
 /** Represents game grid in code. */
-Game.grid = helper.createArray2D(ROWS);
 /** Clickable columns allowing player to drop a circle into the grid. */
 const columns = [];
 // =============================================================================
@@ -51,6 +50,7 @@ const columns = [];
 function createGrid() {
     // Refresh DOM Grid
     DOM.grid.innerHTML = "";
+    Game.grid = helper.createArray2D(ROWS);
     // Create DOM columns (7 columns)
     for (let col = 0; col < COLS; ++col) {
         columns[col] = new Column(col);
@@ -79,7 +79,11 @@ function removeClickOnAllColumns() {
 /**
  * Initializes a round of the game.
  */
-export function gameInit() {
+export function gameInit(rows = ROWS, cols = COLS, connects = TO_WIN) {
+    // Insert custom parameters
+    ROWS = rows;
+    COLS = cols;
+    TO_WIN = connects;
     // Init game parameters
     Game.player = FilledBy.player1;
     Game.gameIsWon = false;
