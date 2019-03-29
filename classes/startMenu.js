@@ -46,6 +46,7 @@ const StartMenu = {
             || (isNaN(connects))
             || (rows < 1)
             || (cols < 1)
+            || (connects < 1)
             || (connects > rows)
                 && (connects > cols)) {
             return false;
