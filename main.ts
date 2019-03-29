@@ -2,6 +2,9 @@
  * @description
  * The game Connect 4, playable in a browser.
  * Done to practice Typescript.
+ * 
+ * I'm sorry this code is not OOP enough.
+ * I didn't realize I needed it til I started using modules.
  *  
  * @author nstryder
  * @version 1.0
@@ -12,9 +15,7 @@
   * TODO: TIE CONDITION (aka board is filled)
   *     > Probbly just check all top rows
   *     > Or do acculumator set to match rows x columns
-  * TODO: Document the shit out of this!
   * TODO: Add parameter customizer at start menu
-  *     > Include ability to change color of players
   *     > OKay we're mostly good but fix the connects < col/rows condition
   * TODO: Add winning line highlight
   * TODO?: Add music
