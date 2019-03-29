@@ -7,7 +7,8 @@ const MenuDOM =
     cols: document.getElementById("tfCols") as HTMLInputElement ,
     connects: document.getElementById("tfConnect") as HTMLInputElement,
     color1: document.getElementById("tfColor1") as HTMLInputElement,
-    color2: document.getElementById("tfColor2") as HTMLInputElement
+    color2: document.getElementById("tfColor2") as HTMLInputElement,
+    html: document.getElementsByTagName('html')[0]
 };
 
 /**
@@ -28,7 +29,6 @@ const StartMenu =
 
             if(StartMenu.validate(rows, cols, connects))
             {
-                console.log("yay");
                 StartMenu.start(rows, cols, connects);
             }
         };
@@ -39,8 +39,13 @@ const StartMenu =
      */
     start(rows, cols, connects)
     {
+        // Grab color values
+        MenuDOM.html.style.setProperty("--p1Color", MenuDOM.color1.value);
+        MenuDOM.html.style.setProperty("--p2Color", MenuDOM.color2.value);
+        
+        // Transition screens
         DOM.game.classList.remove("hidden");
-        DOM.menu.classList.add("hidden"); 
+        DOM.menu.classList.add("hidden");
         gameInit(rows, cols, connects);
     },
 
@@ -49,17 +54,11 @@ const StartMenu =
      */
     validate(rows, cols, connects): boolean
     {
-        console.log(isNaN(rows))
-        console.log(isNaN(cols))
-        console.log(isNaN(connects))
-        console.log(connects > rows);
-        console.log(connects > cols);
-
-        if ((isNaN(rows))
+        if (/*(isNaN(rows))
         ||  (isNaN(cols))
         ||  (isNaN(connects))
-        ||  (connects > rows)
-        ||  (connects > cols))
+        ||*/(connects > rows)
+        &&  (connects > cols))
         {
             return false;
         }

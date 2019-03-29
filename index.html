@@ -13,7 +13,7 @@
     <v-box id="menu">
         <panel->
             <h1>Connect ∞</h1>
-            <h4>The classic vertical friendship killing game!</h4>
+            <h4>The classic vertical friendship-killing game!</h4>
             <content-box>
                 <h5>Custom options:</h5>
                 <form>
@@ -69,7 +69,6 @@
                 <h-box>
                     <slot- class="filledByPlayer1"></slot->
                 </h-box>
-                <p id="winnerTextP1" class="hidden">WINNER!</p>
             </player-box>
 
             <player-box id="boxP2">
@@ -77,12 +76,12 @@
                 <h-box>
                     <slot- class="filledByPlayer2"></slot->
                 </h-box>
-                <p id="winnerTextP2" class="hidden">WINNER!</p>
             </player-box>
         </h-box>
 
-        <!-- Reset button -->
+        <!-- Reset buttons -->
         <panel- id="endMenu" class="hidden">
+            <h1 id="winText"></h1>
             <button id="btReturn">Return to menu</button>
             <button id="btRestart">Restart</button>
         </panel->

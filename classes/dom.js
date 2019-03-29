@@ -9,8 +9,7 @@ const DOM = {
     // Players display
     boxP1: document.getElementById("boxP1"),
     boxP2: document.getElementById("boxP2"),
-    winnerTextP1: document.getElementById("winnerTextP1"),
-    winnerTextP2: document.getElementById("winnerTextP2"),
+    winText: document.getElementById("winText"),
     // End menu
     endMenu: document.getElementById("endMenu"),
     btReturn: document.getElementById("btReturn"),

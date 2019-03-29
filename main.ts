@@ -12,12 +12,8 @@
  */
 
  /**
-  * TODO: TIE CONDITION (aka board is filled)
-  *     > Probbly just check all top rows
-  *     > Or do acculumator set to match rows x columns
-  * TODO: Add parameter customizer at start menu
-  *     > OKay we're mostly good but fix the connects < col/rows condition
-  * TODO: Add winning line highlight
+  * TODO?: Make custom options collapsible
+  * TODO?: Add winning line highlight
   * TODO?: Add music
   * TODO?: Refactor into #real OOP
   */
@@ -42,6 +38,7 @@ EndMenu.activate();
 /** Number of rows in the game grid. */     var ROWS = 6; 
 /** Number of columns in the game grid. */  var COLS = 7;
 /** Number of circles to connect for win */ var TO_WIN = 4;   
+/** Number of moves made */                 var moves: number;
 /** Clickable columns allowing player to drop a circle into the grid. */
 const columns = [];  
 
@@ -129,6 +126,7 @@ export function gameInit(rows = ROWS, cols = COLS, connects = TO_WIN)
     TO_WIN = connects;
 
     // Init game parameters
+    moves = 0;
     Game.player = FilledBy.player1;
     Game.gameIsWon = false;
     createGrid();
@@ -136,13 +134,10 @@ export function gameInit(rows = ROWS, cols = COLS, connects = TO_WIN)
     
     // Hide winners from previous rounds
     EndMenu.hide();
-    DOM.winnerTextP1.classList.add("hidden");
-    DOM.winnerTextP2.classList.add("hidden");
 
     // Show P1 as the active player
     DOM.boxP1.classList.add("currentPlayer");
     DOM.boxP2.classList.remove("currentPlayer");
-
 }
 
 // -----------------------------------------------------------------------------
@@ -159,8 +154,11 @@ function handleColumnClick(e: CustomEvent)
     let colIndex: number = e.detail.index;
 
     insertCircle(colIndex);
+    // Check winner
     let winner = checkVictory();
     if (winner) { endGame(winner); return; }
+    // Check for draw
+    if (moves === (ROWS * COLS)) { endGame(FilledBy.none); return;}
     switchPlayers();
 
     // Check if top Slot is filled
@@ -185,6 +183,7 @@ function insertCircle(colIndex: number)
         if (Game.grid[row][colIndex].state === FilledBy.none)
         {
             Game.grid[row][colIndex].changeState(Game.player);
+            ++moves;
             return;
         }
     }
@@ -232,13 +231,23 @@ function endGame(winner: FilledBy)
     // Remove all event listeners
     removeClickOnAllColumns();
 
-    // Show victor in UI
-    (winner === FilledBy.player1) 
-    ? DOM.winnerTextP1.classList.toggle("hidden")
-    : DOM.winnerTextP2.classList.toggle("hidden");
-
     // Show end menu
     EndMenu.show();
+
+    // Show victor in UI
+    switch (winner)
+    {
+        case FilledBy.player1:
+            DOM.winText.innerHTML = "Player 1 wins!"
+            break;
+        case FilledBy.player2:
+            DOM.winText.innerHTML = "Player 2 wins!"
+            break;
+        default:
+            DOM.winText.innerHTML = "Draw."
+            break;
+    }
+
 }
 
 // -----------------------------------------------------------------------------
